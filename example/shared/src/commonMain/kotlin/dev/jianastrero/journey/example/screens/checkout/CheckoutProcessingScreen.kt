@@ -1,0 +1,46 @@
+package dev.jianastrero.journey.example.screens.checkout
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import dev.jianastrero.journey.example.AppState
+import dev.jianastrero.journey.example.Checkout
+import dev.jianastrero.journey.example.CheckoutProcessingController
+import kotlin.time.Duration.Companion.milliseconds
+import kotlinx.coroutines.delay
+
+@Composable
+internal fun CheckoutProcessingScreen(step: Checkout.Processing, controller: CheckoutProcessingController) {
+    LaunchedEffect(step) {
+        delay(2500.milliseconds)
+        AppState.clearCart()
+        controller.toDone()
+    }
+
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+    ) {
+        CircularProgressIndicator(modifier = Modifier.size(64.dp), strokeWidth = 5.dp)
+        Spacer(Modifier.height(24.dp))
+        Text("Processing your payment…", style = MaterialTheme.typography.titleMedium)
+        Spacer(Modifier.height(8.dp))
+        Text(
+            step.paymentMethod,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+}

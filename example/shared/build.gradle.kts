@@ -1,4 +1,3 @@
-import groovy.lang.ExpandoMetaClassCreationHandle.enable
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -56,6 +55,7 @@ kotlin {
                 implementation(libs.androidx.lifecycle.runtimeCompose)
                 implementation(libs.jetbrains.navigation3.ui)
                 implementation(libs.kotlinx.serialization.json)
+                @Suppress("DEPRECATION") implementation(compose.materialIconsExtended)
             }
         }
         commonTest.dependencies {

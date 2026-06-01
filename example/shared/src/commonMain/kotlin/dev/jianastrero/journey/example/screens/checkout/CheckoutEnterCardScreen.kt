@@ -27,8 +27,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import dev.jianastrero.journey.example.Checkout
-import dev.jianastrero.journey.example.CheckoutEnterCardDetailsController
+import dev.jianastrero.journey.example.journeys.Checkout
+import dev.jianastrero.journey.example.journeys.CheckoutEnterCardDetailsController
 import dev.jianastrero.journey.example.screens.StepButton
 
 private data class CardValues(val number: String, val name: String, val expiry: String, val cvv: String)

@@ -32,8 +32,8 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import dev.jianastrero.journey.example.AppState
-import dev.jianastrero.journey.example.SignUp
-import dev.jianastrero.journey.example.SignUpEnterPasswordController
+import dev.jianastrero.journey.example.journeys.SignUp
+import dev.jianastrero.journey.example.journeys.SignUpEnterPasswordController
 
 @Composable
 private fun PasswordInputField(

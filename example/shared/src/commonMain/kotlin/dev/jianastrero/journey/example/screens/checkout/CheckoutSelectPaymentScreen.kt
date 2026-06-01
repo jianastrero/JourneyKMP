@@ -33,8 +33,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import dev.jianastrero.journey.example.Checkout
-import dev.jianastrero.journey.example.CheckoutSelectPaymentController
+import dev.jianastrero.journey.example.journeys.Checkout
+import dev.jianastrero.journey.example.journeys.CheckoutSelectPaymentController
 import dev.jianastrero.journey.example.screens.StepButton
 
 private enum class PaymentMethod { Card, Wallet }

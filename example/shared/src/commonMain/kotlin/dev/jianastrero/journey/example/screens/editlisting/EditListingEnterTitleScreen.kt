@@ -29,7 +29,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import dev.jianastrero.journey.example.AppState
-import dev.jianastrero.journey.example.EditListingEnterTitleController
+import dev.jianastrero.journey.example.journeys.EditListingEnterTitleController
 import dev.jianastrero.journey.example.screens.StepButton
 
 private val listingCategories = listOf("Electronics", "Clothing", "Books", "Home", "Other")

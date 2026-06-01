@@ -2,7 +2,7 @@ package dev.jianastrero.journey.example.screens.editlisting
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import dev.jianastrero.journey.example.EditListingDoneController
+import dev.jianastrero.journey.example.journeys.EditListingDoneController
 
 @Composable
 internal fun EditListingDoneScreen(controller: EditListingDoneController) {

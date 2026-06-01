@@ -2,7 +2,7 @@ package dev.jianastrero.journey.example.screens.logout
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import dev.jianastrero.journey.example.LogoutDoneController
+import dev.jianastrero.journey.example.journeys.LogoutDoneController
 
 @Composable
 internal fun LogoutDoneScreen(controller: LogoutDoneController) {

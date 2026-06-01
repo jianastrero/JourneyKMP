@@ -26,8 +26,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import dev.jianastrero.journey.example.AppState
-import dev.jianastrero.journey.example.EditListing
-import dev.jianastrero.journey.example.EditListingEnterPriceController
+import dev.jianastrero.journey.example.journeys.EditListing
+import dev.jianastrero.journey.example.journeys.EditListingEnterPriceController
 import dev.jianastrero.journey.example.screens.StepButton
 
 @OptIn(ExperimentalMaterial3Api::class)

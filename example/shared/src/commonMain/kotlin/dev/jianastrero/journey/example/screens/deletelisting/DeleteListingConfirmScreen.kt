@@ -28,7 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import dev.jianastrero.journey.example.AppState
-import dev.jianastrero.journey.example.DeleteListingConfirmController
+import dev.jianastrero.journey.example.journeys.DeleteListingConfirmController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

@@ -17,8 +17,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import dev.jianastrero.journey.example.AppState
-import dev.jianastrero.journey.example.SignUp
-import dev.jianastrero.journey.example.SignUpSSOLoadingController
+import dev.jianastrero.journey.example.journeys.SignUp
+import dev.jianastrero.journey.example.journeys.SignUpSSOLoadingController
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.seconds
 

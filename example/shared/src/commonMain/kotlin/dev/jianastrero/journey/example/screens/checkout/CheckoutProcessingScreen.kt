@@ -17,8 +17,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import dev.jianastrero.journey.example.AppState
-import dev.jianastrero.journey.example.Checkout
-import dev.jianastrero.journey.example.CheckoutProcessingController
+import dev.jianastrero.journey.example.journeys.Checkout
+import dev.jianastrero.journey.example.journeys.CheckoutProcessingController
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.milliseconds
 

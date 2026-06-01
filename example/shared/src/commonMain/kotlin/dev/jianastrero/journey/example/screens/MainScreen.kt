@@ -1,6 +1,4 @@
-@file:Suppress("InvalidPackageDeclaration", "unused")
-
-package dev.jianastrero.journey.example
+package dev.jianastrero.journey.example.screens
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,6 +21,17 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import dev.jianastrero.journey.example.AppState
+import dev.jianastrero.journey.example.journeys.CheckoutJourneyHost
+import dev.jianastrero.journey.example.journeys.CheckoutView
+import dev.jianastrero.journey.example.journeys.CreateListingJourneyHost
+import dev.jianastrero.journey.example.journeys.CreateListingView
+import dev.jianastrero.journey.example.journeys.DeleteListingJourneyHost
+import dev.jianastrero.journey.example.journeys.DeleteListingView
+import dev.jianastrero.journey.example.journeys.EditListingJourneyHost
+import dev.jianastrero.journey.example.journeys.EditListingView
+import dev.jianastrero.journey.example.journeys.LogoutJourneyHost
+import dev.jianastrero.journey.example.journeys.LogoutView
 import dev.jianastrero.journey.example.screens.checkout.CheckoutDoneScreen
 import dev.jianastrero.journey.example.screens.checkout.CheckoutEnterAddressScreen
 import dev.jianastrero.journey.example.screens.checkout.CheckoutEnterCardScreen

@@ -1,3 +1,5 @@
+@file:Suppress("MagicNumber", "unused")
+
 package dev.jianastrero.journey.example.theme
 
 import androidx.compose.ui.graphics.Color

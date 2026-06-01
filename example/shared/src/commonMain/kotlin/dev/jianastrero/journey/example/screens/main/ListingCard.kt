@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package dev.jianastrero.journey.example.screens.main
 
 import androidx.compose.foundation.background
@@ -71,7 +73,10 @@ internal fun ListingCard(listing: Listing, onAddToCart: () -> Unit, modifier: Mo
                             containerColor = MaterialTheme.colorScheme.primaryContainer,
                             contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
                         ),
-                        contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 12.dp, vertical = 6.dp),
+                        contentPadding = androidx.compose.foundation.layout.PaddingValues(
+                            horizontal = 12.dp,
+                            vertical = 6.dp
+                        ),
                     ) {
                         Text("Add", style = MaterialTheme.typography.labelMedium)
                     }

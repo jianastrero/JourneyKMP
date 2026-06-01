@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package dev.jianastrero.journey.example.screens.auth
 
 import androidx.compose.foundation.background
@@ -139,7 +141,11 @@ internal fun SSOButtons(onGoogle: () -> Unit, onApple: () -> Unit) {
             onClick = onApple,
             modifier = Modifier.fillMaxWidth().height(48.dp),
         ) {
-            SSOButtonLabel(letter = "A", letterColor = MaterialTheme.colorScheme.onSurface, label = "Continue with Apple")
+            SSOButtonLabel(
+                letter = "A",
+                letterColor = MaterialTheme.colorScheme.onSurface,
+                label = "Continue with Apple"
+            )
         }
     }
 }

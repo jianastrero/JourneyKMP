@@ -1,3 +1,5 @@
+@file:Suppress("InvalidPackageDeclaration", "unused")
+
 package dev.jianastrero.journey.example
 
 import dev.jianastrero.journey.JourneyStep
@@ -38,12 +40,22 @@ sealed interface CreateListing : JourneyStep {
     @Piggyback("analytics:listing_funnel_review", on = ON_ENTER)
     @Piggyback("analytics:listing_publish_decision", on = ON_EXIT)
     @Exit("toPublish", Published::class)
-    data class Review(val title: String, val category: String, val description: String, val price: String) : CreateListing
+    data class Review(
+        val title: String,
+        val category: String,
+        val description: String,
+        val price: String
+    ) : CreateListing
 
     // Terminal — KSP generates finish() on CreateListingPublishedController.
     // analytics on arrival; notification deferred to exit so it fires after UI settles.
     @Step
     @Piggyback("analytics:listing_created", on = ON_ENTER)
     @Piggyback("notification:listing_live", on = ON_EXIT)
-    data class Published(val title: String, val category: String, val description: String, val price: String) : CreateListing
+    data class Published(
+        val title: String,
+        val category: String,
+        val description: String,
+        val price: String
+    ) : CreateListing
 }

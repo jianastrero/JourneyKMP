@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package dev.jianastrero.journey.example.screens.auth
 
 import androidx.compose.foundation.layout.Arrangement
@@ -17,8 +19,8 @@ import androidx.compose.ui.unit.dp
 import dev.jianastrero.journey.example.AppState
 import dev.jianastrero.journey.example.SignUp
 import dev.jianastrero.journey.example.SignUpSSOLoadingController
-import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.delay
+import kotlin.time.Duration.Companion.seconds
 
 @Composable
 internal fun SignUpSSOLoadingScreen(step: SignUp.SSOLoading, controller: SignUpSSOLoadingController) {

@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package dev.jianastrero.journey.example.screens.checkout
 
 import androidx.compose.foundation.layout.Arrangement
@@ -70,7 +72,14 @@ internal fun CheckoutSelectPaymentScreen(step: Checkout.SelectPayment, controlle
                 onClick = { selected = PaymentMethod.Card },
             )
             PaymentOptionCard(
-                icon = { Icon(Icons.Default.AccountBalanceWallet, contentDescription = null, modifier = Modifier.size(28.dp), tint = MaterialTheme.colorScheme.secondary) },
+                icon = {
+                    Icon(
+                        Icons.Default.AccountBalanceWallet,
+                        contentDescription = null,
+                        modifier = Modifier.size(28.dp),
+                        tint = MaterialTheme.colorScheme.secondary
+                    )
+                },
                 title = "Bazaar Wallet",
                 subtitle = "Pay instantly with your balance",
                 selected = selected == PaymentMethod.Wallet,
@@ -102,7 +111,14 @@ private fun PaymentOptionCard(
     Card(
         onClick = onClick,
         shape = RoundedCornerShape(12.dp),
-        border = if (selected) androidx.compose.foundation.BorderStroke(2.dp, MaterialTheme.colorScheme.primary) else null,
+        border = if (selected) {
+            androidx.compose.foundation.BorderStroke(
+                2.dp,
+                MaterialTheme.colorScheme.primary
+            )
+        } else {
+            null
+        },
         elevation = CardDefaults.cardElevation(defaultElevation = if (selected) 0.dp else 1.dp),
         modifier = Modifier.fillMaxWidth(),
     ) {
@@ -114,7 +130,11 @@ private fun PaymentOptionCard(
             icon()
             Column(modifier = Modifier.weight(1f)) {
                 Text(title, style = MaterialTheme.typography.titleMedium)
-                Text(subtitle, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(
+                    subtitle,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
             RadioButton(selected = selected, onClick = onClick)
         }

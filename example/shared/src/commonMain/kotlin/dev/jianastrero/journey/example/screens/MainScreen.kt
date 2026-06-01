@@ -1,3 +1,5 @@
+@file:Suppress("InvalidPackageDeclaration", "unused")
+
 package dev.jianastrero.journey.example
 
 import androidx.compose.foundation.layout.Box
@@ -56,73 +58,128 @@ private sealed interface ActiveJourney {
     data object Logout : ActiveJourney
 }
 
+private data class MainActions(
+    val onCreateListing: () -> Unit,
+    val onEditListing: (String) -> Unit,
+    val onDeleteListing: (String) -> Unit,
+    val onCheckout: () -> Unit,
+    val onLogout: () -> Unit,
+)
+
 @Composable
 internal fun MainScreen(onSignedOut: () -> Unit) {
     var activeTab by remember { mutableStateOf(MainTab.Home) }
     var activeJourney by remember { mutableStateOf<ActiveJourney>(ActiveJourney.None) }
+    val onJourneyEnd: () -> Unit = { activeJourney = ActiveJourney.None }
+    val actions = MainActions(
+        onCreateListing = { activeJourney = ActiveJourney.CreateListing },
+        onEditListing = { id ->
+            AppState.editingListingId = id
+            activeJourney = ActiveJourney.EditListing(id)
+        },
+        onDeleteListing = { id ->
+            AppState.deletingListingId = id
+            activeJourney = ActiveJourney.DeleteListing(id)
+        },
+        onCheckout = { activeJourney = ActiveJourney.Checkout },
+        onLogout = { activeJourney = ActiveJourney.Logout },
+    )
+    val journey = activeJourney
+    if (journey is ActiveJourney.None) {
+        MainScaffold(activeTab = activeTab, onTabSelected = { activeTab = it }, actions = actions)
+    } else {
+        ActiveJourneyOverlay(journey = journey, onJourneyEnd = onJourneyEnd, onSignedOut = onSignedOut)
+    }
+}
 
-    when (val journey = activeJourney) {
-        is ActiveJourney.None -> MainScaffold(
-            activeTab = activeTab,
-            onTabSelected = { activeTab = it },
-            onCreateListing = { activeJourney = ActiveJourney.CreateListing },
-            onEditListing = { id -> AppState.editingListingId = id; activeJourney = ActiveJourney.EditListing(id) },
-            onDeleteListing = { id -> AppState.deletingListingId = id; activeJourney = ActiveJourney.DeleteListing(id) },
-            onCheckout = { activeJourney = ActiveJourney.Checkout },
-            onLogout = { activeJourney = ActiveJourney.Logout },
-        )
-        is ActiveJourney.CreateListing -> CreateListingJourneyHost(onFinish = { activeJourney = ActiveJourney.None }) { view ->
-            when (view) {
-                is CreateListingView.EnterTitle -> CreateListingEnterTitleScreen(view.controller, onCancel = { activeJourney = ActiveJourney.None })
-                is CreateListingView.EnterDescription -> CreateListingEnterDescriptionScreen(view.step, view.controller)
-                is CreateListingView.EnterPrice -> CreateListingEnterPriceScreen(view.step, view.controller)
-                is CreateListingView.Review -> CreateListingReviewScreen(view.step, view.controller)
-                is CreateListingView.Published -> CreateListingPublishedScreen(view.step, view.controller)
-            }
-        }
-        is ActiveJourney.EditListing -> EditListingJourneyHost(onFinish = { activeJourney = ActiveJourney.None }) { view ->
-            when (view) {
-                is EditListingView.EnterTitle -> EditListingEnterTitleScreen(journey.listingId, view.controller, onCancel = { activeJourney = ActiveJourney.None })
-                is EditListingView.EnterDescription -> EditListingEnterDescriptionScreen(view.step, view.controller)
-                is EditListingView.EnterPrice -> EditListingEnterPriceScreen(view.step, view.controller)
-                is EditListingView.Done -> EditListingDoneScreen(view.controller)
-            }
-        }
-        is ActiveJourney.DeleteListing -> DeleteListingJourneyHost(onFinish = { activeJourney = ActiveJourney.None }) { view ->
-            when (view) {
-                is DeleteListingView.Confirm -> DeleteListingConfirmScreen(journey.listingId, view.controller, onCancel = { activeJourney = ActiveJourney.None })
-                is DeleteListingView.Done -> DeleteListingDoneScreen(view.controller)
-            }
-        }
-        is ActiveJourney.Checkout -> CheckoutJourneyHost(onFinish = { activeJourney = ActiveJourney.None }) { view ->
-            when (view) {
-                is CheckoutView.ReviewCart -> CheckoutReviewCartScreen(view.controller)
-                is CheckoutView.EnterAddress -> CheckoutEnterAddressScreen(view.controller)
-                is CheckoutView.SelectPayment -> CheckoutSelectPaymentScreen(view.step, view.controller)
-                is CheckoutView.EnterCardDetails -> CheckoutEnterCardScreen(view.step, view.controller)
-                is CheckoutView.Processing -> CheckoutProcessingScreen(view.step, view.controller)
-                is CheckoutView.Done -> CheckoutDoneScreen(view.controller)
-            }
-        }
-        is ActiveJourney.Logout -> LogoutJourneyHost(onFinish = onSignedOut) { view ->
-            when (view) {
-                is LogoutView.Confirm -> LogoutConfirmScreen(view.controller, onCancel = { activeJourney = ActiveJourney.None })
-                is LogoutView.Done -> LogoutDoneScreen(view.controller)
-            }
+@Composable
+private fun ActiveJourneyOverlay(
+    journey: ActiveJourney,
+    onJourneyEnd: () -> Unit,
+    onSignedOut: () -> Unit,
+) {
+    when (journey) {
+        is ActiveJourney.None -> Unit
+        is ActiveJourney.CreateListing -> CreateListingFlow(onJourneyEnd)
+        is ActiveJourney.EditListing -> EditListingFlow(journey, onJourneyEnd)
+        is ActiveJourney.DeleteListing -> DeleteListingFlow(journey, onJourneyEnd)
+        is ActiveJourney.Checkout -> CheckoutFlow(onJourneyEnd)
+        is ActiveJourney.Logout -> LogoutFlow(onJourneyEnd, onSignedOut)
+    }
+}
+
+@Composable
+private fun CreateListingFlow(onJourneyEnd: () -> Unit) {
+    CreateListingJourneyHost(onFinish = onJourneyEnd) { view ->
+        when (view) {
+            is CreateListingView.EnterTitle ->
+                CreateListingEnterTitleScreen(view.controller, onCancel = onJourneyEnd)
+            is CreateListingView.EnterDescription ->
+                CreateListingEnterDescriptionScreen(view.step, view.controller)
+            is CreateListingView.EnterPrice ->
+                CreateListingEnterPriceScreen(view.step, view.controller)
+            is CreateListingView.Review ->
+                CreateListingReviewScreen(view.step, view.controller)
+            is CreateListingView.Published ->
+                CreateListingPublishedScreen(view.step, view.controller)
         }
     }
 }
 
 @Composable
-private fun MainScaffold(
-    activeTab: MainTab,
-    onTabSelected: (MainTab) -> Unit,
-    onCreateListing: () -> Unit,
-    onEditListing: (String) -> Unit,
-    onDeleteListing: (String) -> Unit,
-    onCheckout: () -> Unit,
-    onLogout: () -> Unit,
-) {
+private fun EditListingFlow(journey: ActiveJourney.EditListing, onJourneyEnd: () -> Unit) {
+    EditListingJourneyHost(onFinish = onJourneyEnd) { view ->
+        when (view) {
+            is EditListingView.EnterTitle ->
+                EditListingEnterTitleScreen(journey.listingId, view.controller, onCancel = onJourneyEnd)
+            is EditListingView.EnterDescription ->
+                EditListingEnterDescriptionScreen(view.step, view.controller)
+            is EditListingView.EnterPrice ->
+                EditListingEnterPriceScreen(view.step, view.controller)
+            is EditListingView.Done ->
+                EditListingDoneScreen(view.controller)
+        }
+    }
+}
+
+@Composable
+private fun DeleteListingFlow(journey: ActiveJourney.DeleteListing, onJourneyEnd: () -> Unit) {
+    DeleteListingJourneyHost(onFinish = onJourneyEnd) { view ->
+        when (view) {
+            is DeleteListingView.Confirm ->
+                DeleteListingConfirmScreen(journey.listingId, view.controller, onCancel = onJourneyEnd)
+            is DeleteListingView.Done ->
+                DeleteListingDoneScreen(view.controller)
+        }
+    }
+}
+
+@Composable
+private fun CheckoutFlow(onJourneyEnd: () -> Unit) {
+    CheckoutJourneyHost(onFinish = onJourneyEnd) { view ->
+        when (view) {
+            is CheckoutView.ReviewCart -> CheckoutReviewCartScreen(view.controller)
+            is CheckoutView.EnterAddress -> CheckoutEnterAddressScreen(view.controller)
+            is CheckoutView.SelectPayment -> CheckoutSelectPaymentScreen(view.step, view.controller)
+            is CheckoutView.EnterCardDetails -> CheckoutEnterCardScreen(view.step, view.controller)
+            is CheckoutView.Processing -> CheckoutProcessingScreen(view.step, view.controller)
+            is CheckoutView.Done -> CheckoutDoneScreen(view.controller)
+        }
+    }
+}
+
+@Composable
+private fun LogoutFlow(onJourneyEnd: () -> Unit, onSignedOut: () -> Unit) {
+    LogoutJourneyHost(onFinish = onSignedOut) { view ->
+        when (view) {
+            is LogoutView.Confirm -> LogoutConfirmScreen(view.controller, onCancel = onJourneyEnd)
+            is LogoutView.Done -> LogoutDoneScreen(view.controller)
+        }
+    }
+}
+
+@Composable
+private fun MainScaffold(activeTab: MainTab, onTabSelected: (MainTab) -> Unit, actions: MainActions) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         bottomBar = {
@@ -165,12 +222,12 @@ private fun MainScaffold(
                     AppState.listings.firstOrNull { it.id == listingId }?.let { AppState.addToCart(it) }
                 })
                 MainTab.Listings -> MyListingsTab(
-                    onCreateListing = onCreateListing,
-                    onEditListing = onEditListing,
-                    onDeleteListing = onDeleteListing,
+                    onCreateListing = actions.onCreateListing,
+                    onEditListing = actions.onEditListing,
+                    onDeleteListing = actions.onDeleteListing,
                 )
-                MainTab.Cart -> CartTab(onCheckout = onCheckout)
-                MainTab.Profile -> ProfileTab(onLogout = onLogout)
+                MainTab.Cart -> CartTab(onCheckout = actions.onCheckout)
+                MainTab.Profile -> ProfileTab(onLogout = actions.onLogout)
             }
         }
     }

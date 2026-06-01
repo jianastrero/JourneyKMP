@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package dev.jianastrero.journey.example
 
 import androidx.compose.runtime.Composable
@@ -15,7 +17,10 @@ fun App() {
         var screen by remember { mutableStateOf(AppScreen.Auth) }
         when (screen) {
             AppScreen.Auth -> AuthFlow(onSignedIn = { screen = AppScreen.Main })
-            AppScreen.Main -> MainScreen(onSignedOut = { AppState.signOut(); screen = AppScreen.Auth })
+            AppScreen.Main -> MainScreen(onSignedOut = {
+                AppState.signOut()
+                screen = AppScreen.Auth
+            })
         }
     }
 }

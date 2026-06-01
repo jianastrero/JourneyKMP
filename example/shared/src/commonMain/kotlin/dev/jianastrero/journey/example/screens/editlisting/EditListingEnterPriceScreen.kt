@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package dev.jianastrero.journey.example.screens.editlisting
 
 import androidx.compose.foundation.layout.Arrangement
@@ -43,7 +45,11 @@ internal fun EditListingEnterPriceScreen(
                 title = {
                     Column {
                         Text("Edit listing", style = MaterialTheme.typography.titleMedium)
-                        Text("Step 3 of 3", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text(
+                            "Step 3 of 3",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                     }
                 },
                 navigationIcon = {

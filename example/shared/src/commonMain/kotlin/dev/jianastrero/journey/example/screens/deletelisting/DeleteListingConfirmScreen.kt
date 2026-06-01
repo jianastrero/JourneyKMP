@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package dev.jianastrero.journey.example.screens.deletelisting
 
 import androidx.compose.foundation.layout.Arrangement
@@ -30,7 +32,11 @@ import dev.jianastrero.journey.example.DeleteListingConfirmController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun DeleteListingConfirmScreen(listingId: String, controller: DeleteListingConfirmController, onCancel: () -> Unit) {
+internal fun DeleteListingConfirmScreen(
+    listingId: String,
+    controller: DeleteListingConfirmController,
+    onCancel: () -> Unit
+) {
     val listing = remember(listingId) { AppState.listings.firstOrNull { it.id == listingId } }
 
     Scaffold(

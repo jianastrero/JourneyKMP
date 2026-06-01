@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package dev.jianastrero.journey.example.screens.createlisting
 
 import androidx.compose.foundation.layout.Arrangement
@@ -39,7 +41,11 @@ internal fun CreateListingReviewScreen(step: CreateListing.Review, controller: C
                 title = {
                     Column {
                         Text("New listing", style = MaterialTheme.typography.titleMedium)
-                        Text("Step 4 of 4 — Review", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text(
+                            "Step 4 of 4 — Review",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                     }
                 },
                 navigationIcon = {
@@ -63,21 +69,7 @@ internal fun CreateListingReviewScreen(step: CreateListing.Review, controller: C
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
-            Card(
-                shape = RoundedCornerShape(16.dp),
-                elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                Column(modifier = Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    ReviewRow(label = "Title", value = step.title)
-                    HorizontalDivider()
-                    ReviewRow(label = "Category", value = step.category)
-                    HorizontalDivider()
-                    ReviewRow(label = "Description", value = step.description)
-                    HorizontalDivider()
-                    ReviewRow(label = "Price", value = "$${(step.price.toDoubleOrNull() ?: 0.0).toPrice()}")
-                }
-            }
+            ListingReviewCard(step)
             Spacer(Modifier.weight(1f))
             StepButton(
                 label = "Publish listing",
@@ -87,6 +79,25 @@ internal fun CreateListingReviewScreen(step: CreateListing.Review, controller: C
                     controller.toPublish(step.title, step.category, step.description, step.price)
                 },
             )
+        }
+    }
+}
+
+@Composable
+private fun ListingReviewCard(step: CreateListing.Review) {
+    Card(
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        Column(modifier = Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            ReviewRow(label = "Title", value = step.title)
+            HorizontalDivider()
+            ReviewRow(label = "Category", value = step.category)
+            HorizontalDivider()
+            ReviewRow(label = "Description", value = step.description)
+            HorizontalDivider()
+            ReviewRow(label = "Price", value = "$${(step.price.toDoubleOrNull() ?: 0.0).toPrice()}")
         }
     }
 }

@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package dev.jianastrero.journey.example.screens.createlisting
 
 import androidx.compose.foundation.layout.Arrangement
@@ -42,7 +44,11 @@ internal fun CreateListingEnterDescriptionScreen(
                 title = {
                     Column {
                         Text("New listing", style = MaterialTheme.typography.titleMedium)
-                        Text("Step 2 of 4", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text(
+                            "Step 2 of 4",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                     }
                 },
                 navigationIcon = {

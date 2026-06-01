@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package dev.jianastrero.journey.example.screens.checkout
 
 import androidx.compose.foundation.layout.Arrangement
@@ -17,8 +19,8 @@ import androidx.compose.ui.unit.dp
 import dev.jianastrero.journey.example.AppState
 import dev.jianastrero.journey.example.Checkout
 import dev.jianastrero.journey.example.CheckoutProcessingController
-import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.delay
+import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
 internal fun CheckoutProcessingScreen(step: Checkout.Processing, controller: CheckoutProcessingController) {

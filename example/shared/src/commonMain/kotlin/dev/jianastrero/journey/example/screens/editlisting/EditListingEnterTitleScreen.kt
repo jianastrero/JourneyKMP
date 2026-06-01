@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package dev.jianastrero.journey.example.screens.editlisting
 
 import androidx.compose.foundation.layout.Arrangement
@@ -34,7 +36,11 @@ private val listingCategories = listOf("Electronics", "Clothing", "Books", "Home
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
-internal fun EditListingEnterTitleScreen(listingId: String, controller: EditListingEnterTitleController, onCancel: () -> Unit) {
+internal fun EditListingEnterTitleScreen(
+    listingId: String,
+    controller: EditListingEnterTitleController,
+    onCancel: () -> Unit
+) {
     val existing = remember(listingId) { AppState.listings.firstOrNull { it.id == listingId } }
 
     var title by remember { mutableStateOf(existing?.title ?: "") }
@@ -46,7 +52,11 @@ internal fun EditListingEnterTitleScreen(listingId: String, controller: EditList
                 title = {
                     Column {
                         Text("Edit listing", style = MaterialTheme.typography.titleMedium)
-                        Text("Step 1 of 3", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text(
+                            "Step 1 of 3",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                     }
                 },
                 navigationIcon = {

@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package dev.jianastrero.journey.example.screens.auth
 
 import androidx.compose.foundation.layout.Arrangement
@@ -33,6 +35,33 @@ import dev.jianastrero.journey.example.AppState
 import dev.jianastrero.journey.example.SignUp
 import dev.jianastrero.journey.example.SignUpEnterPasswordController
 
+@Composable
+private fun PasswordInputField(
+    password: String,
+    passwordVisible: Boolean,
+    onPasswordChange: (String) -> Unit,
+    onVisibilityToggle: () -> Unit,
+) {
+    val transformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation()
+    val iconDescription = if (passwordVisible) "Hide password" else "Show password"
+    OutlinedTextField(
+        value = password,
+        onValueChange = onPasswordChange,
+        label = { Text("Password") },
+        modifier = Modifier.fillMaxWidth(),
+        singleLine = true,
+        visualTransformation = transformation,
+        trailingIcon = {
+            IconButton(onClick = onVisibilityToggle) {
+                Icon(
+                    if (passwordVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility,
+                    contentDescription = iconDescription,
+                )
+            }
+        },
+    )
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun SignUpEnterPasswordScreen(step: SignUp.EnterPassword, controller: SignUpEnterPasswordController) {
@@ -65,21 +94,11 @@ internal fun SignUpEnterPasswordScreen(step: SignUp.EnterPassword, controller: S
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             Spacer(Modifier.height(8.dp))
-            OutlinedTextField(
-                value = password,
-                onValueChange = { password = it },
-                label = { Text("Password") },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-                visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                trailingIcon = {
-                    IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                        Icon(
-                            if (passwordVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility,
-                            contentDescription = if (passwordVisible) "Hide password" else "Show password",
-                        )
-                    }
-                },
+            PasswordInputField(
+                password = password,
+                passwordVisible = passwordVisible,
+                onPasswordChange = { password = it },
+                onVisibilityToggle = { passwordVisible = !passwordVisible },
             )
             Button(
                 onClick = {

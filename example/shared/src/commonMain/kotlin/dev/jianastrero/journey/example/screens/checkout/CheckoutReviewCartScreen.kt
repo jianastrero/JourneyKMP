@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package dev.jianastrero.journey.example.screens.checkout
 
 import androidx.compose.foundation.layout.Arrangement
@@ -31,6 +33,25 @@ import dev.jianastrero.journey.example.CheckoutReviewCartController
 import dev.jianastrero.journey.example.screens.StepButton
 import dev.jianastrero.journey.example.screens.toPrice
 
+@Composable
+private fun CartOrderSummary(onProceed: () -> Unit) {
+    Surface(shadowElevation = 8.dp, modifier = Modifier.fillMaxWidth()) {
+        Column(modifier = Modifier.padding(24.dp)) {
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                Text("Total", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+                Text(
+                    "$${AppState.cartTotal.toPrice()}",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary,
+                )
+            }
+            Spacer(Modifier.height(16.dp))
+            StepButton(label = "Continue to address", enabled = AppState.cart.isNotEmpty(), onClick = onProceed)
+        }
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun CheckoutReviewCartScreen(controller: CheckoutReviewCartController) {
@@ -60,7 +81,11 @@ internal fun CheckoutReviewCartScreen(controller: CheckoutReviewCartController) 
                     ) {
                         Column(modifier = Modifier.weight(1f)) {
                             Text(item.listing.title, style = MaterialTheme.typography.titleMedium, maxLines = 1)
-                            Text("Qty: ${item.quantity}", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            Text(
+                                "Qty: ${item.quantity}",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
                         }
                         Text(
                             "$${(item.listing.price * item.quantity).toPrice()}",
@@ -70,16 +95,7 @@ internal fun CheckoutReviewCartScreen(controller: CheckoutReviewCartController) 
                     }
                 }
             }
-            Surface(shadowElevation = 8.dp, modifier = Modifier.fillMaxWidth()) {
-                Column(modifier = Modifier.padding(24.dp)) {
-                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                        Text("Total", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
-                        Text("$${AppState.cartTotal.toPrice()}", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
-                    }
-                    Spacer(Modifier.height(16.dp))
-                    StepButton(label = "Continue to address", enabled = AppState.cart.isNotEmpty(), onClick = { controller.toEnterAddress() })
-                }
-            }
+            CartOrderSummary(onProceed = { controller.toEnterAddress() })
         }
     }
 }

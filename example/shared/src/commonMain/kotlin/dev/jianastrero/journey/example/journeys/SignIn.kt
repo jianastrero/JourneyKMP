@@ -1,3 +1,5 @@
+@file:Suppress("InvalidPackageDeclaration", "unused")
+
 package dev.jianastrero.journey.example
 
 import dev.jianastrero.journey.JourneyStep

@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package dev.jianastrero.journey.example.screens.main
 
 import androidx.compose.foundation.horizontalScroll
@@ -34,6 +36,25 @@ import dev.jianastrero.journey.example.AppState
 
 private val categories = listOf("All", "Electronics", "Clothing", "Books", "Home")
 
+@Composable
+private fun CategoryFilterRow(selectedCategory: String, onSelect: (String) -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .horizontalScroll(rememberScrollState())
+            .padding(horizontal = 16.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        categories.forEach { cat ->
+            FilterChip(
+                selected = selectedCategory == cat,
+                onClick = { onSelect(cat) },
+                label = { Text(cat) },
+            )
+        }
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun HomeTab(onAddToCart: (listingId: String) -> Unit) {
@@ -67,21 +88,7 @@ internal fun HomeTab(onAddToCart: (listingId: String) -> Unit) {
                 shape = RoundedCornerShape(28.dp),
                 singleLine = true,
             )
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .horizontalScroll(rememberScrollState())
-                    .padding(horizontal = 16.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                categories.forEach { cat ->
-                    FilterChip(
-                        selected = selectedCategory == cat,
-                        onClick = { selectedCategory = cat },
-                        label = { Text(cat) },
-                    )
-                }
-            }
+            CategoryFilterRow(selectedCategory = selectedCategory, onSelect = { selectedCategory = it })
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
                 contentPadding = PaddingValues(16.dp),

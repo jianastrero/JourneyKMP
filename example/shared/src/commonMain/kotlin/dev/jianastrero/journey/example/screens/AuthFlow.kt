@@ -1,12 +1,14 @@
-@file:Suppress("InvalidPackageDeclaration", "unused")
-
-package dev.jianastrero.journey.example
+package dev.jianastrero.journey.example.screens
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import dev.jianastrero.journey.example.journeys.SignInJourneyHost
+import dev.jianastrero.journey.example.journeys.SignInView
+import dev.jianastrero.journey.example.journeys.SignUpJourneyHost
+import dev.jianastrero.journey.example.journeys.SignUpView
 import dev.jianastrero.journey.example.screens.auth.SignInDoneScreen
 import dev.jianastrero.journey.example.screens.auth.SignInEnterCredentialsScreen
 import dev.jianastrero.journey.example.screens.auth.SignInEnterPasswordScreen
@@ -27,7 +29,7 @@ internal fun AuthFlow(onSignedIn: () -> Unit) {
             when (view) {
                 is SignInView.EnterCredentials -> SignInEnterCredentialsScreen(
                     controller = view.controller,
-                    onSwitchToSignUp = { mode = AuthMode.SignUp }
+                    onSwitchToSignUp = { mode = AuthMode.SignUp },
                 )
                 is SignInView.EnterPassword -> SignInEnterPasswordScreen(view.step, view.controller)
                 is SignInView.SSOLoading -> SignInSSOLoadingScreen(view.step, view.controller)
@@ -38,7 +40,7 @@ internal fun AuthFlow(onSignedIn: () -> Unit) {
             when (view) {
                 is SignUpView.EnterUsername -> SignUpEnterUsernameScreen(
                     controller = view.controller,
-                    onSwitchToSignIn = { mode = AuthMode.SignIn }
+                    onSwitchToSignIn = { mode = AuthMode.SignIn },
                 )
                 is SignUpView.EnterEmail -> SignUpEnterEmailScreen(view.step, view.controller)
                 is SignUpView.EnterPassword -> SignUpEnterPasswordScreen(view.step, view.controller)

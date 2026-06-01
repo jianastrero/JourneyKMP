@@ -29,7 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import dev.jianastrero.journey.example.AppState
-import dev.jianastrero.journey.example.CheckoutReviewCartController
+import dev.jianastrero.journey.example.journeys.CheckoutReviewCartController
 import dev.jianastrero.journey.example.screens.StepButton
 import dev.jianastrero.journey.example.screens.toPrice
 

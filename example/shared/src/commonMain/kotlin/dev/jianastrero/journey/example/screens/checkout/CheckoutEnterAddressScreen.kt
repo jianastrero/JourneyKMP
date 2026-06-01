@@ -23,7 +23,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import dev.jianastrero.journey.example.CheckoutEnterAddressController
+import dev.jianastrero.journey.example.journeys.CheckoutEnterAddressController
 import dev.jianastrero.journey.example.screens.StepButton
 
 @OptIn(ExperimentalMaterial3Api::class)

@@ -25,8 +25,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import dev.jianastrero.journey.example.SignUp
-import dev.jianastrero.journey.example.SignUpEnterEmailController
+import dev.jianastrero.journey.example.journeys.SignUp
+import dev.jianastrero.journey.example.journeys.SignUpEnterEmailController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

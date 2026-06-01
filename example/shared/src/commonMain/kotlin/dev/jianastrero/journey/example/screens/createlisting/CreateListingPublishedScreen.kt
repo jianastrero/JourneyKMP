@@ -19,8 +19,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import dev.jianastrero.journey.example.CreateListing
-import dev.jianastrero.journey.example.CreateListingPublishedController
+import dev.jianastrero.journey.example.journeys.CreateListing
+import dev.jianastrero.journey.example.journeys.CreateListingPublishedController
 import dev.jianastrero.journey.example.theme.Emerald500
 
 @Composable

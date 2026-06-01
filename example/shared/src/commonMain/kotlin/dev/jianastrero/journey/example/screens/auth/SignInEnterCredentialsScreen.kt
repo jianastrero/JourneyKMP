@@ -36,7 +36,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import dev.jianastrero.journey.example.SignInEnterCredentialsController
+import dev.jianastrero.journey.example.journeys.SignInEnterCredentialsController
 import dev.jianastrero.journey.example.theme.Violet600
 import dev.jianastrero.journey.example.theme.Violet900
 

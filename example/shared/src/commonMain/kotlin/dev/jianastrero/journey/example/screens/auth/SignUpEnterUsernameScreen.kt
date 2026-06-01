@@ -18,7 +18,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import dev.jianastrero.journey.example.SignUpEnterUsernameController
+import dev.jianastrero.journey.example.journeys.SignUpEnterUsernameController
 
 @Composable
 internal fun SignUpEnterUsernameScreen(

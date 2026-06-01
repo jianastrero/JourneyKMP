@@ -1,6 +1,6 @@
 @file:Suppress("InvalidPackageDeclaration", "unused")
 
-package dev.jianastrero.journey.example
+package dev.jianastrero.journey.example.journeys
 
 import dev.jianastrero.journey.JourneyStep
 import dev.jianastrero.journey.annotations.Exit

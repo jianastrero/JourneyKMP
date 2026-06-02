@@ -8,7 +8,28 @@ You define a journey as a sealed interface. KSP reads it at build time and gener
 
 ## Installation
 
-> TODO
+Add the KSP plugin and JourneyKMP to your multiplatform module's `build.gradle.kts`:
+
+```kotlin
+plugins {
+    id("com.google.devtools.ksp") version "2.3.9"
+}
+
+kotlin {
+    sourceSets {
+        commonMain.dependencies {
+            implementation("dev.jianastrero:journey-kmp:0.1.0")
+        }
+    }
+}
+
+dependencies {
+    // Run the KSP processor against the common source set
+    add("kspCommonMainMetadata", "dev.jianastrero:journey-kmp-ksp:0.1.0")
+}
+```
+
+> **Note:** `journey-kmp-annotations` is a transitive dependency of `journey-kmp` — no need to add it separately.
 
 ---
 

@@ -1,3 +1,4 @@
+import com.vanniktech.maven.publish.SonatypeHost
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -6,14 +7,13 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.kotlinxSerialization)
-    `maven-publish`
+    alias(libs.plugins.vanniktechPublish)
 }
 
 group = "dev.jianastrero"
 version = "0.1.0"
 
 kotlin {
-    // Enable iOS targets
     listOf(
         iosArm64(),
         iosSimulatorArm64()
@@ -52,6 +52,37 @@ kotlin {
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
+        }
+    }
+}
+
+mavenPublishing {
+    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
+    signAllPublications()
+    coordinates("dev.jianastrero", "journey-kmp", "0.1.0")
+
+    pom {
+        name = "JourneyKMP"
+        description = "Type-safe, annotation-driven navigation for Kotlin Multiplatform (Android & iOS), built on Navigation3."
+        inceptionYear = "2025"
+        url = "https://github.com/jianastrero/JourneyKMP"
+        licenses {
+            license {
+                name = "MIT License"
+                url = "https://opensource.org/licenses/MIT"
+            }
+        }
+        developers {
+            developer {
+                id = "jianastrero"
+                name = "Jian Astrero"
+                url = "https://github.com/jianastrero/"
+            }
+        }
+        scm {
+            url = "https://github.com/jianastrero/JourneyKMP"
+            connection = "scm:git:git://github.com/jianastrero/JourneyKMP.git"
+            developerConnection = "scm:git:ssh://git@github.com/jianastrero/JourneyKMP.git"
         }
     }
 }

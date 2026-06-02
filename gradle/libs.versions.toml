@@ -21,6 +21,7 @@ kotlinx-serialization = "1.11.0"
 binaryCompatibilityValidator = "0.18.1"
 detekt = "1.23.8"
 detekt-compose = "0.5.9"
+vanniktechPublish = "0.30.0"
 
 [libraries]
 detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
@@ -57,4 +58,5 @@ kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref =
 kotlinxSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlinx-serialization-plugin" }
 binaryCompatibilityValidator = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version.ref = "binaryCompatibilityValidator" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
-ksp    = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+ksp              = { id = "com.google.devtools.ksp",               version.ref = "ksp" }
+vanniktechPublish = { id = "com.vanniktech.maven.publish",         version.ref = "vanniktechPublish" }

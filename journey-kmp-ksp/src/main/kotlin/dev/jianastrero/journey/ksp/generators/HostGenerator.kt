@@ -22,10 +22,12 @@ import dev.jianastrero.journey.ksp.model.StepModel
 
 private val COMPOSABLE = ClassName("androidx.compose.runtime", "Composable")
 private val REMEMBER = ClassName("androidx.compose.runtime", "remember")
+private val REMEMBER_SAVEABLE = MemberName("androidx.compose.runtime.saveable", "rememberSaveable")
+private val LIST_SAVER = MemberName("androidx.compose.runtime.saveable", "listSaver")
 private val LAUNCHED_EFFECT = ClassName("androidx.compose.runtime", "LaunchedEffect")
 private val DISPOSABLE_EFFECT = ClassName("androidx.compose.runtime", "DisposableEffect")
 private val REMEMBER_COROUTINE_SCOPE = ClassName("androidx.compose.runtime", "rememberCoroutineScope")
-private val MUTABLE_STATE_LIST_OF = ClassName("androidx.compose.runtime", "mutableStateListOf")
+private val MUTABLE_STATE_LIST_OF_FN = MemberName("androidx.compose.runtime", "mutableStateListOf")
 private val NAV_DISPLAY = ClassName("androidx.navigation3.ui", "NavDisplay")
 private val NAV_ENTRY = ClassName("androidx.navigation3.runtime", "NavEntry")
 private val JOURNEY_STEP = ClassName("dev.jianastrero.journey", "JourneyStep")
@@ -75,14 +77,7 @@ internal class HostGenerator(
         val hasExitPiggybacks = steps.any { s -> s.piggybacks.any { it.trigger == "ON_EXIT" } }
 
         return CodeBlock.builder()
-            .addStatement(
-                "val backStack = %T { %T<%T>(%T.%L) }",
-                REMEMBER,
-                MUTABLE_STATE_LIST_OF,
-                JOURNEY_STEP,
-                journeyClass,
-                initialStep.simpleName
-            )
+            .add(buildBackStackDeclaration(steps, journeyClass, initialStep))
             .addStatement("val piggybackRegistry = %T.current", LOCAL_PIGGYBACK_REGISTRY)
             .apply { if (hasExitPiggybacks) addStatement("val scope = %T()", REMEMBER_COROUTINE_SCOPE) }
             .add("\n")
@@ -115,6 +110,82 @@ internal class HostGenerator(
             .endControlFlow()
             .endControlFlow()
             .build()
+    }
+
+    private fun buildBackStackDeclaration(
+        steps: List<StepModel>,
+        journeyClass: ClassName,
+        initialStep: StepModel
+    ): CodeBlock {
+        val encode = buildEncodeBlock(steps, journeyClass)
+        val decode = buildDecodeBlock(steps, journeyClass)
+        return CodeBlock.builder()
+            .add("val backStack = %M(saver = %M(\n", REMEMBER_SAVEABLE, LIST_SAVER)
+            .indent()
+            .add("save = { list -> list.map { step ->\n")
+            .indent()
+            .add(encode)
+            .unindent()
+            .add("}},\n")
+            .add("restore = { saved ->\n")
+            .indent()
+            .add(
+                "%M(*saved.mapNotNull { encoded ->\n",
+                MUTABLE_STATE_LIST_OF_FN
+            )
+            .indent()
+            .add("val parts = encoded.split(\"|\")\n")
+            .add(decode)
+            .unindent()
+            .add("}.toTypedArray())\n")
+            .unindent()
+            .add("}\n")
+            .unindent()
+            .addStatement(
+                ")) { %M<%T>(%T.%L) }",
+                MUTABLE_STATE_LIST_OF_FN,
+                JOURNEY_STEP,
+                journeyClass,
+                initialStep.simpleName
+            )
+            .build()
+    }
+
+    private fun buildEncodeBlock(steps: List<StepModel>, journeyClass: ClassName): CodeBlock {
+        val cb = CodeBlock.builder()
+        cb.beginControlFlow("when (step)")
+        steps.forEach { step ->
+            val params = if (step.isDataObject) emptyList()
+            else step.classDecl.primaryConstructor?.parameters.orEmpty()
+            val encodeExpr = if (params.isEmpty()) {
+                "\"${step.simpleName}\""
+            } else {
+                val parts = params.joinToString("|") { "\${step.${it.name!!.asString()}}" }
+                "\"${step.simpleName}|$parts\""
+            }
+            cb.addStatement("is %T.%L -> " + encodeExpr, journeyClass, step.simpleName)
+        }
+        cb.addStatement("else -> \"\"")
+        cb.endControlFlow()
+        return cb.build()
+    }
+
+    private fun buildDecodeBlock(steps: List<StepModel>, journeyClass: ClassName): CodeBlock {
+        val cb = CodeBlock.builder()
+        cb.beginControlFlow("when (parts.getOrNull(0))")
+        steps.forEach { step ->
+            val params = if (step.isDataObject) emptyList()
+            else step.classDecl.primaryConstructor?.parameters.orEmpty()
+            if (params.isEmpty()) {
+                cb.addStatement("%S -> %T.%L", step.simpleName, journeyClass, step.simpleName)
+            } else {
+                val argList = params.mapIndexed { i, _ -> "parts[${i + 1}]" }.joinToString(", ")
+                cb.addStatement("%S -> %T.%L($argList)", step.simpleName, journeyClass, step.simpleName)
+            }
+        }
+        cb.addStatement("else -> null")
+        cb.endControlFlow()
+        return cb.build()
     }
 
     private fun buildEnterPiggybacks(piggybacks: List<PiggybackModel>, stepId: String, journeyId: String): CodeBlock {

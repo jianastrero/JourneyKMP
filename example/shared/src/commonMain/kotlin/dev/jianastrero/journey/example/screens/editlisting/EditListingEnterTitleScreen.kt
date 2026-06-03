@@ -34,7 +34,21 @@ import dev.jianastrero.journey.example.screens.StepButton
 
 private val listingCategories = listOf("Electronics", "Clothing", "Books", "Home", "Other")
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun CategorySelector(selected: String, onSelect: (String) -> Unit) {
+    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        listingCategories.forEach { cat ->
+            FilterChip(
+                selected = selected == cat,
+                onClick = { onSelect(cat) },
+                label = { Text(cat) },
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun EditListingEnterTitleScreen(
     listingId: String,
@@ -84,15 +98,7 @@ internal fun EditListingEnterTitleScreen(
                 singleLine = true,
             )
             Text("Category", style = MaterialTheme.typography.titleMedium)
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                listingCategories.forEach { cat ->
-                    FilterChip(
-                        selected = category == cat,
-                        onClick = { category = cat },
-                        label = { Text(cat) },
-                    )
-                }
-            }
+            CategorySelector(selected = category, onSelect = { category = it })
             Spacer(Modifier.weight(1f))
             StepButton(
                 label = "Next: Description",

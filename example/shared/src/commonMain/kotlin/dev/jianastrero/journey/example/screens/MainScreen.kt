@@ -72,6 +72,14 @@ private sealed interface MainDest {
     data object Logout : MainDest
 }
 
+private data class MainScaffoldActions(
+    val onCreateListing: () -> Unit,
+    val onEditListing: (String) -> Unit,
+    val onDeleteListing: (String) -> Unit,
+    val onCheckout: () -> Unit,
+    val onLogout: () -> Unit,
+)
+
 private val mainDestSaver = listSaver<SnapshotStateList<Any>, String>(
     save = { list ->
         list.map { dest ->
@@ -121,17 +129,19 @@ internal fun MainScreen(onSignedOut: () -> Unit) {
                 MainScaffold(
                     activeTab = dest,
                     onTabSelected = { tab -> backStack[backStack.lastIndex] = tab },
-                    onCreateListing = { backStack.add(MainDest.CreateListing) },
-                    onEditListing = { id ->
-                        vm.editingListingId = id
-                        backStack.add(MainDest.EditListing(id))
-                    },
-                    onDeleteListing = { id ->
-                        vm.deletingListingId = id
-                        backStack.add(MainDest.DeleteListing(id))
-                    },
-                    onCheckout = { backStack.add(MainDest.Checkout) },
-                    onLogout = { backStack.add(MainDest.Logout) },
+                    actions = MainScaffoldActions(
+                        onCreateListing = { backStack.add(MainDest.CreateListing) },
+                        onEditListing = { id ->
+                            vm.editingListingId = id
+                            backStack.add(MainDest.EditListing(id))
+                        },
+                        onDeleteListing = { id ->
+                            vm.deletingListingId = id
+                            backStack.add(MainDest.DeleteListing(id))
+                        },
+                        onCheckout = { backStack.add(MainDest.Checkout) },
+                        onLogout = { backStack.add(MainDest.Logout) },
+                    ),
                 )
             }
             is MainDest.CreateListing -> NavEntry(dest) { CreateListingFlow(onJourneyEnd) }
@@ -218,11 +228,7 @@ private fun LogoutFlow(onJourneyEnd: () -> Unit, onSignedOut: () -> Unit) {
 private fun MainScaffold(
     activeTab: MainDest.Tab,
     onTabSelected: (MainDest.Tab) -> Unit,
-    onCreateListing: () -> Unit,
-    onEditListing: (String) -> Unit,
-    onDeleteListing: (String) -> Unit,
-    onCheckout: () -> Unit,
-    onLogout: () -> Unit,
+    actions: MainScaffoldActions,
 ) {
     val vm = LocalAppViewModel.current
     Scaffold(
@@ -267,12 +273,12 @@ private fun MainScaffold(
                     vm.listings.firstOrNull { it.id == listingId }?.let { vm.addToCart(it) }
                 })
                 MainDest.Tab.Listings -> MyListingsTab(
-                    onCreateListing = onCreateListing,
-                    onEditListing = onEditListing,
-                    onDeleteListing = onDeleteListing,
+                    onCreateListing = actions.onCreateListing,
+                    onEditListing = actions.onEditListing,
+                    onDeleteListing = actions.onDeleteListing,
                 )
-                MainDest.Tab.Cart -> CartTab(onCheckout = onCheckout)
-                MainDest.Tab.Profile -> ProfileTab(onLogout = onLogout)
+                MainDest.Tab.Cart -> CartTab(onCheckout = actions.onCheckout)
+                MainDest.Tab.Profile -> ProfileTab(onLogout = actions.onLogout)
             }
         }
     }

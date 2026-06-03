@@ -16,7 +16,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import dev.jianastrero.journey.example.AppState
+import dev.jianastrero.journey.example.LocalAppViewModel
 import dev.jianastrero.journey.example.journeys.SignUp
 import dev.jianastrero.journey.example.journeys.SignUpSSOLoadingController
 import kotlinx.coroutines.delay
@@ -24,9 +24,10 @@ import kotlin.time.Duration.Companion.seconds
 
 @Composable
 internal fun SignUpSSOLoadingScreen(step: SignUp.SSOLoading, controller: SignUpSSOLoadingController) {
+    val vm = LocalAppViewModel.current
     LaunchedEffect(step) {
         delay(2.seconds)
-        AppState.signUp("${step.provider.lowercase()}_user", "${step.provider.lowercase()}@example.com")
+        vm.signUp("${step.provider.lowercase()}_user", "${step.provider.lowercase()}@example.com")
         controller.toDone()
     }
 

@@ -25,7 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import dev.jianastrero.journey.example.AppState
+import dev.jianastrero.journey.example.LocalAppViewModel
 import dev.jianastrero.journey.example.journeys.EditListing
 import dev.jianastrero.journey.example.journeys.EditListingEnterPriceController
 import dev.jianastrero.journey.example.screens.StepButton
@@ -36,7 +36,8 @@ internal fun EditListingEnterPriceScreen(
     step: EditListing.EnterPrice,
     controller: EditListingEnterPriceController,
 ) {
-    val existing = remember { AppState.listings.firstOrNull { it.id == AppState.editingListingId } }
+    val vm = LocalAppViewModel.current
+    val existing = remember { vm.listings.firstOrNull { it.id == vm.editingListingId } }
     var price by remember { mutableStateOf(existing?.price?.toString() ?: "") }
 
     Scaffold(
@@ -81,9 +82,9 @@ internal fun EditListingEnterPriceScreen(
                 label = "Save changes",
                 enabled = price.isNotBlank() && price.toDoubleOrNull() != null,
                 onClick = {
-                    val listingId = AppState.editingListingId
+                    val listingId = vm.editingListingId
                     if (listingId != null) {
-                        AppState.updateListing(listingId, step.title, step.category, step.description, price.trim())
+                        vm.updateListing(listingId, step.title, step.category, step.description, price.trim())
                     }
                     controller.toDone(step.title, step.category, step.description, price.trim())
                 },

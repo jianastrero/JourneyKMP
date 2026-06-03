@@ -31,12 +31,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import dev.jianastrero.journey.example.AppState
+import dev.jianastrero.journey.example.LocalAppViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun ProfileTab(onLogout: () -> Unit) {
-    val user = AppState.currentUser
+    val vm = LocalAppViewModel.current
+    val user = vm.currentUser
 
     Column(modifier = Modifier.fillMaxSize()) {
         TopAppBar(title = { Text("Profile") })
@@ -48,7 +49,7 @@ internal fun ProfileTab(onLogout: () -> Unit) {
             if (user != null) {
                 AvatarSection(displayName = user.displayName, email = user.email)
                 Spacer(Modifier.height(24.dp))
-                StatsCard(listingCount = AppState.myListings.size, cartCount = AppState.cartItemCount)
+                StatsCard(listingCount = vm.myListings.size, cartCount = vm.cartItemCount)
             }
             Spacer(Modifier.weight(1f))
             OutlinedButton(

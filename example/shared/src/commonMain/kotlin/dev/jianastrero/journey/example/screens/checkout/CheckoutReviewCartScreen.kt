@@ -28,26 +28,27 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import dev.jianastrero.journey.example.AppState
+import dev.jianastrero.journey.example.LocalAppViewModel
 import dev.jianastrero.journey.example.journeys.CheckoutReviewCartController
 import dev.jianastrero.journey.example.screens.StepButton
 import dev.jianastrero.journey.example.screens.toPrice
 
 @Composable
 private fun CartOrderSummary(onProceed: () -> Unit) {
+    val vm = LocalAppViewModel.current
     Surface(shadowElevation = 8.dp, modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(24.dp)) {
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                 Text("Total", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
                 Text(
-                    "$${AppState.cartTotal.toPrice()}",
+                    "$${vm.cartTotal.toPrice()}",
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary,
                 )
             }
             Spacer(Modifier.height(16.dp))
-            StepButton(label = "Continue to address", enabled = AppState.cart.isNotEmpty(), onClick = onProceed)
+            StepButton(label = "Continue to address", enabled = vm.cart.isNotEmpty(), onClick = onProceed)
         }
     }
 }
@@ -55,6 +56,7 @@ private fun CartOrderSummary(onProceed: () -> Unit) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun CheckoutReviewCartScreen(controller: CheckoutReviewCartController) {
+    val vm = LocalAppViewModel.current
     Scaffold(
         topBar = {
             TopAppBar(
@@ -73,7 +75,7 @@ internal fun CheckoutReviewCartScreen(controller: CheckoutReviewCartController) 
                 contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                items(AppState.cart) { item ->
+                items(vm.cart) { item ->
                     Row(
                         modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
                         horizontalArrangement = Arrangement.SpaceBetween,

@@ -26,7 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import dev.jianastrero.journey.example.AppState
+import dev.jianastrero.journey.example.LocalAppViewModel
 import dev.jianastrero.journey.example.journeys.CreateListing
 import dev.jianastrero.journey.example.journeys.CreateListingReviewController
 import dev.jianastrero.journey.example.screens.StepButton
@@ -35,6 +35,7 @@ import dev.jianastrero.journey.example.screens.toPrice
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun CreateListingReviewScreen(step: CreateListing.Review, controller: CreateListingReviewController) {
+    val vm = LocalAppViewModel.current
     Scaffold(
         topBar = {
             TopAppBar(
@@ -75,7 +76,7 @@ internal fun CreateListingReviewScreen(step: CreateListing.Review, controller: C
                 label = "Publish listing",
                 enabled = true,
                 onClick = {
-                    AppState.createListing(step.title, step.category, step.description, step.price)
+                    vm.createListing(step.title, step.category, step.description, step.price)
                     controller.toPublish(step.title, step.category, step.description, step.price)
                 },
             )

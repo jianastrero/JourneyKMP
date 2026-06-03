@@ -6,13 +6,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.ViewModel
 import dev.jianastrero.journey.example.model.CartItem
 import dev.jianastrero.journey.example.model.Listing
 import dev.jianastrero.journey.example.model.User
 
 private const val INITIAL_LISTING_ID = 100
 
-object AppState {
+class AppViewModel : ViewModel() {
     var currentUser: User? by mutableStateOf(null)
     val listings = mutableStateListOf<Listing>()
     val cart = mutableStateListOf<CartItem>()

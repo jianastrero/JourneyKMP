@@ -28,7 +28,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import dev.jianastrero.journey.example.AppState
+import dev.jianastrero.journey.example.LocalAppViewModel
 import dev.jianastrero.journey.example.journeys.EditListingEnterTitleController
 import dev.jianastrero.journey.example.screens.StepButton
 
@@ -41,7 +41,8 @@ internal fun EditListingEnterTitleScreen(
     controller: EditListingEnterTitleController,
     onCancel: () -> Unit
 ) {
-    val existing = remember(listingId) { AppState.listings.firstOrNull { it.id == listingId } }
+    val vm = LocalAppViewModel.current
+    val existing = remember(listingId) { vm.listings.firstOrNull { it.id == listingId } }
 
     var title by remember { mutableStateOf(existing?.title ?: "") }
     var category by remember { mutableStateOf(existing?.category ?: listingCategories[0]) }

@@ -32,7 +32,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import dev.jianastrero.journey.example.AppState
+import dev.jianastrero.journey.example.LocalAppViewModel
 
 private val categories = listOf("All", "Electronics", "Clothing", "Books", "Home")
 
@@ -58,10 +58,11 @@ private fun CategoryFilterRow(selectedCategory: String, onSelect: (String) -> Un
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun HomeTab(onAddToCart: (listingId: String) -> Unit) {
+    val vm = LocalAppViewModel.current
     var query by remember { mutableStateOf("") }
     var selectedCategory by remember { mutableStateOf("All") }
 
-    val filtered = AppState.listings.filter { listing ->
+    val filtered = vm.listings.filter { listing ->
         val matchesQuery = query.isBlank() || listing.title.contains(query, ignoreCase = true) ||
             listing.description.contains(query, ignoreCase = true)
         val matchesCategory = selectedCategory == "All" || listing.category == selectedCategory

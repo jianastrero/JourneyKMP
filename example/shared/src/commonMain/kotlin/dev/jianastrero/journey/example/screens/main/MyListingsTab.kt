@@ -34,7 +34,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import dev.jianastrero.journey.example.AppState
+import dev.jianastrero.journey.example.LocalAppViewModel
 import dev.jianastrero.journey.example.model.Listing
 import dev.jianastrero.journey.example.screens.toPrice
 
@@ -45,7 +45,8 @@ internal fun MyListingsTab(
     onEditListing: (listingId: String) -> Unit,
     onDeleteListing: (listingId: String) -> Unit,
 ) {
-    val myListings = AppState.myListings
+    val vm = LocalAppViewModel.current
+    val myListings = vm.myListings
 
     Scaffold(
         topBar = { TopAppBar(title = { Text("My Listings") }) },

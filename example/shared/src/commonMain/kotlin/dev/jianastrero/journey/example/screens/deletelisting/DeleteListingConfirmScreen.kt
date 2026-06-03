@@ -27,7 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import dev.jianastrero.journey.example.AppState
+import dev.jianastrero.journey.example.LocalAppViewModel
 import dev.jianastrero.journey.example.journeys.DeleteListingConfirmController
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -37,7 +37,8 @@ internal fun DeleteListingConfirmScreen(
     controller: DeleteListingConfirmController,
     onCancel: () -> Unit
 ) {
-    val listing = remember(listingId) { AppState.listings.firstOrNull { it.id == listingId } }
+    val vm = LocalAppViewModel.current
+    val listing = remember(listingId) { vm.listings.firstOrNull { it.id == listingId } }
 
     Scaffold(
         topBar = { TopAppBar(title = { Text("Delete listing") }) },
@@ -70,7 +71,7 @@ internal fun DeleteListingConfirmScreen(
             Spacer(Modifier.height(40.dp))
             Button(
                 onClick = {
-                    AppState.deleteListing(listingId)
+                    vm.deleteListing(listingId)
                     controller.toDone()
                 },
                 colors = ButtonDefaults.buttonColors(

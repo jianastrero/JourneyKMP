@@ -16,12 +16,14 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.saveable.listSaver
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
-import dev.jianastrero.journey.example.AppState
+import androidx.navigation3.runtime.NavEntry
+import androidx.navigation3.ui.NavDisplay
+import dev.jianastrero.journey.example.LocalAppViewModel
 import dev.jianastrero.journey.example.journeys.CheckoutJourneyHost
 import dev.jianastrero.journey.example.journeys.CheckoutView
 import dev.jianastrero.journey.example.journeys.CreateListingJourneyHost
@@ -56,64 +58,89 @@ import dev.jianastrero.journey.example.screens.main.HomeTab
 import dev.jianastrero.journey.example.screens.main.MyListingsTab
 import dev.jianastrero.journey.example.screens.main.ProfileTab
 
-private enum class MainTab { Home, Listings, Cart, Profile }
-
-private sealed interface ActiveJourney {
-    data object None : ActiveJourney
-    data object CreateListing : ActiveJourney
-    data class EditListing(val listingId: String) : ActiveJourney
-    data class DeleteListing(val listingId: String) : ActiveJourney
-    data object Checkout : ActiveJourney
-    data object Logout : ActiveJourney
+private sealed interface MainDest {
+    sealed interface Tab : MainDest {
+        data object Home : Tab
+        data object Listings : Tab
+        data object Cart : Tab
+        data object Profile : Tab
+    }
+    data object CreateListing : MainDest
+    data class EditListing(val id: String) : MainDest
+    data class DeleteListing(val id: String) : MainDest
+    data object Checkout : MainDest
+    data object Logout : MainDest
 }
 
-private data class MainActions(
-    val onCreateListing: () -> Unit,
-    val onEditListing: (String) -> Unit,
-    val onDeleteListing: (String) -> Unit,
-    val onCheckout: () -> Unit,
-    val onLogout: () -> Unit,
+private val mainDestSaver = listSaver<SnapshotStateList<Any>, String>(
+    save = { list ->
+        list.map { dest ->
+            when (dest) {
+                is MainDest.Tab.Home -> "Home"
+                is MainDest.Tab.Listings -> "Listings"
+                is MainDest.Tab.Cart -> "Cart"
+                is MainDest.Tab.Profile -> "Profile"
+                is MainDest.CreateListing -> "CreateListing"
+                is MainDest.EditListing -> "EditListing|${dest.id}"
+                is MainDest.DeleteListing -> "DeleteListing|${dest.id}"
+                is MainDest.Checkout -> "Checkout"
+                is MainDest.Logout -> "Logout"
+                else -> ""
+            }
+        }
+    },
+    restore = { saved ->
+        val list = mutableStateListOf<Any>()
+        saved.forEach { encoded ->
+            val parts = encoded.split("|")
+            when (parts.getOrNull(0)) {
+                "Home" -> list.add(MainDest.Tab.Home)
+                "Listings" -> list.add(MainDest.Tab.Listings)
+                "Cart" -> list.add(MainDest.Tab.Cart)
+                "Profile" -> list.add(MainDest.Tab.Profile)
+                "CreateListing" -> list.add(MainDest.CreateListing)
+                "EditListing" -> list.add(MainDest.EditListing(parts[1]))
+                "DeleteListing" -> list.add(MainDest.DeleteListing(parts[1]))
+                "Checkout" -> list.add(MainDest.Checkout)
+                "Logout" -> list.add(MainDest.Logout)
+            }
+        }
+        list
+    }
 )
 
 @Composable
 internal fun MainScreen(onSignedOut: () -> Unit) {
-    var activeTab by remember { mutableStateOf(MainTab.Home) }
-    var activeJourney by remember { mutableStateOf<ActiveJourney>(ActiveJourney.None) }
-    val onJourneyEnd: () -> Unit = { activeJourney = ActiveJourney.None }
-    val actions = MainActions(
-        onCreateListing = { activeJourney = ActiveJourney.CreateListing },
-        onEditListing = { id ->
-            AppState.editingListingId = id
-            activeJourney = ActiveJourney.EditListing(id)
-        },
-        onDeleteListing = { id ->
-            AppState.deletingListingId = id
-            activeJourney = ActiveJourney.DeleteListing(id)
-        },
-        onCheckout = { activeJourney = ActiveJourney.Checkout },
-        onLogout = { activeJourney = ActiveJourney.Logout },
-    )
-    val journey = activeJourney
-    if (journey is ActiveJourney.None) {
-        MainScaffold(activeTab = activeTab, onTabSelected = { activeTab = it }, actions = actions)
-    } else {
-        ActiveJourneyOverlay(journey = journey, onJourneyEnd = onJourneyEnd, onSignedOut = onSignedOut)
-    }
-}
+    val backStack = rememberSaveable(saver = mainDestSaver) { mutableStateListOf(MainDest.Tab.Home) }
+    val onJourneyEnd: () -> Unit = { backStack.removeLastOrNull() }
 
-@Composable
-private fun ActiveJourneyOverlay(
-    journey: ActiveJourney,
-    onJourneyEnd: () -> Unit,
-    onSignedOut: () -> Unit,
-) {
-    when (journey) {
-        is ActiveJourney.None -> Unit
-        is ActiveJourney.CreateListing -> CreateListingFlow(onJourneyEnd)
-        is ActiveJourney.EditListing -> EditListingFlow(journey, onJourneyEnd)
-        is ActiveJourney.DeleteListing -> DeleteListingFlow(journey, onJourneyEnd)
-        is ActiveJourney.Checkout -> CheckoutFlow(onJourneyEnd)
-        is ActiveJourney.Logout -> LogoutFlow(onJourneyEnd, onSignedOut)
+    NavDisplay(backStack = backStack, onBack = { backStack.removeLastOrNull() }) { dest ->
+        when (dest) {
+            is MainDest.Tab -> NavEntry(dest) {
+                val vm = LocalAppViewModel.current
+                MainScaffold(
+                    activeTab = dest,
+                    onTabSelected = { tab -> backStack[backStack.lastIndex] = tab },
+                    onCreateListing = { backStack.add(MainDest.CreateListing) },
+                    onEditListing = { id ->
+                        vm.editingListingId = id
+                        backStack.add(MainDest.EditListing(id))
+                    },
+                    onDeleteListing = { id ->
+                        vm.deletingListingId = id
+                        backStack.add(MainDest.DeleteListing(id))
+                    },
+                    onCheckout = { backStack.add(MainDest.Checkout) },
+                    onLogout = { backStack.add(MainDest.Logout) },
+                )
+            }
+            is MainDest.CreateListing -> NavEntry(dest) { CreateListingFlow(onJourneyEnd) }
+            is MainDest.EditListing -> NavEntry(dest) { EditListingFlow(dest.id, onJourneyEnd) }
+            is MainDest.DeleteListing -> NavEntry(dest) { DeleteListingFlow(dest.id, onJourneyEnd) }
+            is MainDest.Checkout -> NavEntry(dest) { CheckoutFlow(onJourneyEnd) }
+            is MainDest.Logout -> NavEntry(dest) { LogoutFlow(onJourneyEnd, onSignedOut) }
+            else -> NavEntry(dest) {}
+        }
     }
 }
 
@@ -136,11 +163,11 @@ private fun CreateListingFlow(onJourneyEnd: () -> Unit) {
 }
 
 @Composable
-private fun EditListingFlow(journey: ActiveJourney.EditListing, onJourneyEnd: () -> Unit) {
+private fun EditListingFlow(listingId: String, onJourneyEnd: () -> Unit) {
     EditListingJourneyHost(onFinish = onJourneyEnd) { view ->
         when (view) {
             is EditListingView.EnterTitle ->
-                EditListingEnterTitleScreen(journey.listingId, view.controller, onCancel = onJourneyEnd)
+                EditListingEnterTitleScreen(listingId, view.controller, onCancel = onJourneyEnd)
             is EditListingView.EnterDescription ->
                 EditListingEnterDescriptionScreen(view.step, view.controller)
             is EditListingView.EnterPrice ->
@@ -152,11 +179,11 @@ private fun EditListingFlow(journey: ActiveJourney.EditListing, onJourneyEnd: ()
 }
 
 @Composable
-private fun DeleteListingFlow(journey: ActiveJourney.DeleteListing, onJourneyEnd: () -> Unit) {
+private fun DeleteListingFlow(listingId: String, onJourneyEnd: () -> Unit) {
     DeleteListingJourneyHost(onFinish = onJourneyEnd) { view ->
         when (view) {
             is DeleteListingView.Confirm ->
-                DeleteListingConfirmScreen(journey.listingId, view.controller, onCancel = onJourneyEnd)
+                DeleteListingConfirmScreen(listingId, view.controller, onCancel = onJourneyEnd)
             is DeleteListingView.Done ->
                 DeleteListingDoneScreen(view.controller)
         }
@@ -188,28 +215,37 @@ private fun LogoutFlow(onJourneyEnd: () -> Unit, onSignedOut: () -> Unit) {
 }
 
 @Composable
-private fun MainScaffold(activeTab: MainTab, onTabSelected: (MainTab) -> Unit, actions: MainActions) {
+private fun MainScaffold(
+    activeTab: MainDest.Tab,
+    onTabSelected: (MainDest.Tab) -> Unit,
+    onCreateListing: () -> Unit,
+    onEditListing: (String) -> Unit,
+    onDeleteListing: (String) -> Unit,
+    onCheckout: () -> Unit,
+    onLogout: () -> Unit,
+) {
+    val vm = LocalAppViewModel.current
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         bottomBar = {
             NavigationBar {
                 NavigationBarItem(
-                    selected = activeTab == MainTab.Home,
-                    onClick = { onTabSelected(MainTab.Home) },
+                    selected = activeTab == MainDest.Tab.Home,
+                    onClick = { onTabSelected(MainDest.Tab.Home) },
                     icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
                     label = { Text("Home") },
                 )
                 NavigationBarItem(
-                    selected = activeTab == MainTab.Listings,
-                    onClick = { onTabSelected(MainTab.Listings) },
+                    selected = activeTab == MainDest.Tab.Listings,
+                    onClick = { onTabSelected(MainDest.Tab.Listings) },
                     icon = { Icon(Icons.Default.Store, contentDescription = "My Listings") },
                     label = { Text("Listings") },
                 )
                 NavigationBarItem(
-                    selected = activeTab == MainTab.Cart,
-                    onClick = { onTabSelected(MainTab.Cart) },
+                    selected = activeTab == MainDest.Tab.Cart,
+                    onClick = { onTabSelected(MainDest.Tab.Cart) },
                     icon = {
-                        val count = AppState.cartItemCount
+                        val count = vm.cartItemCount
                         BadgedBox(badge = { if (count > 0) Badge { Text("$count") } }) {
                             Icon(Icons.Default.ShoppingCart, contentDescription = "Cart")
                         }
@@ -217,8 +253,8 @@ private fun MainScaffold(activeTab: MainTab, onTabSelected: (MainTab) -> Unit, a
                     label = { Text("Cart") },
                 )
                 NavigationBarItem(
-                    selected = activeTab == MainTab.Profile,
-                    onClick = { onTabSelected(MainTab.Profile) },
+                    selected = activeTab == MainDest.Tab.Profile,
+                    onClick = { onTabSelected(MainDest.Tab.Profile) },
                     icon = { Icon(Icons.Default.Person, contentDescription = "Profile") },
                     label = { Text("Profile") },
                 )
@@ -227,16 +263,16 @@ private fun MainScaffold(activeTab: MainTab, onTabSelected: (MainTab) -> Unit, a
     ) { padding ->
         Box(modifier = Modifier.fillMaxSize().padding(bottom = padding.calculateBottomPadding())) {
             when (activeTab) {
-                MainTab.Home -> HomeTab(onAddToCart = { listingId ->
-                    AppState.listings.firstOrNull { it.id == listingId }?.let { AppState.addToCart(it) }
+                MainDest.Tab.Home -> HomeTab(onAddToCart = { listingId ->
+                    vm.listings.firstOrNull { it.id == listingId }?.let { vm.addToCart(it) }
                 })
-                MainTab.Listings -> MyListingsTab(
-                    onCreateListing = actions.onCreateListing,
-                    onEditListing = actions.onEditListing,
-                    onDeleteListing = actions.onDeleteListing,
+                MainDest.Tab.Listings -> MyListingsTab(
+                    onCreateListing = onCreateListing,
+                    onEditListing = onEditListing,
+                    onDeleteListing = onDeleteListing,
                 )
-                MainTab.Cart -> CartTab(onCheckout = actions.onCheckout)
-                MainTab.Profile -> ProfileTab(onLogout = actions.onLogout)
+                MainDest.Tab.Cart -> CartTab(onCheckout = onCheckout)
+                MainDest.Tab.Profile -> ProfileTab(onLogout = onLogout)
             }
         }
     }

@@ -36,17 +36,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import dev.jianastrero.journey.example.AppState
+import dev.jianastrero.journey.example.LocalAppViewModel
 import dev.jianastrero.journey.example.model.CartItem
 import dev.jianastrero.journey.example.screens.toPrice
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun CartTab(onCheckout: () -> Unit) {
-    val cart = AppState.cart
+    val vm = LocalAppViewModel.current
+    val cart = vm.cart
 
     Column(modifier = Modifier.fillMaxSize()) {
-        TopAppBar(title = { Text("Cart (${AppState.cartItemCount})") })
+        TopAppBar(title = { Text("Cart (${vm.cartItemCount})") })
         if (cart.isEmpty()) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -68,8 +69,8 @@ internal fun CartTab(onCheckout: () -> Unit) {
                 items(cart, key = { it.listing.id }) { item ->
                     CartItemRow(
                         item = item,
-                        onIncrement = { AppState.updateCartQuantity(item.listing.id, 1) },
-                        onDecrement = { AppState.updateCartQuantity(item.listing.id, -1) },
+                        onIncrement = { vm.updateCartQuantity(item.listing.id, 1) },
+                        onDecrement = { vm.updateCartQuantity(item.listing.id, -1) },
                     )
                 }
             }
@@ -132,6 +133,7 @@ private fun CartItemRow(item: CartItem, onIncrement: () -> Unit, onDecrement: ()
 
 @Composable
 private fun OrderSummary(onCheckout: () -> Unit) {
+    val vm = LocalAppViewModel.current
     Surface(
         shadowElevation = 8.dp,
         modifier = Modifier.fillMaxWidth(),
@@ -142,7 +144,7 @@ private fun OrderSummary(onCheckout: () -> Unit) {
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 Text("Subtotal", style = MaterialTheme.typography.bodyLarge)
-                Text("$${AppState.cartTotal.toPrice()}", style = MaterialTheme.typography.bodyLarge)
+                Text("$${vm.cartTotal.toPrice()}", style = MaterialTheme.typography.bodyLarge)
             }
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -162,7 +164,7 @@ private fun OrderSummary(onCheckout: () -> Unit) {
             ) {
                 Text("Total", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
                 Text(
-                    "$${AppState.cartTotal.toPrice()}",
+                    "$${vm.cartTotal.toPrice()}",
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary,

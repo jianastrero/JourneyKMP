@@ -26,7 +26,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import dev.jianastrero.journey.example.AppState
+import dev.jianastrero.journey.example.LocalAppViewModel
 import dev.jianastrero.journey.example.journeys.EditListing
 import dev.jianastrero.journey.example.journeys.EditListingEnterDescriptionController
 import dev.jianastrero.journey.example.screens.StepButton
@@ -37,7 +37,8 @@ internal fun EditListingEnterDescriptionScreen(
     step: EditListing.EnterDescription,
     controller: EditListingEnterDescriptionController,
 ) {
-    val existing = remember { AppState.listings.firstOrNull { it.id == AppState.editingListingId } }
+    val vm = LocalAppViewModel.current
+    val existing = remember { vm.listings.firstOrNull { it.id == vm.editingListingId } }
     var description by remember { mutableStateOf(existing?.description ?: "") }
 
     Scaffold(

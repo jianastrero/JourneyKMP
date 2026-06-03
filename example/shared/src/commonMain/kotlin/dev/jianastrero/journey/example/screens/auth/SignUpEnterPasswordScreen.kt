@@ -31,7 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import dev.jianastrero.journey.example.AppState
+import dev.jianastrero.journey.example.LocalAppViewModel
 import dev.jianastrero.journey.example.journeys.SignUp
 import dev.jianastrero.journey.example.journeys.SignUpEnterPasswordController
 
@@ -65,6 +65,7 @@ private fun PasswordInputField(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun SignUpEnterPasswordScreen(step: SignUp.EnterPassword, controller: SignUpEnterPasswordController) {
+    val vm = LocalAppViewModel.current
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
 
@@ -103,7 +104,7 @@ internal fun SignUpEnterPasswordScreen(step: SignUp.EnterPassword, controller: S
             Button(
                 onClick = {
                     if (password.isNotBlank()) {
-                        AppState.signUp(step.username, step.email)
+                        vm.signUp(step.username, step.email)
                         controller.toDone()
                     }
                 },

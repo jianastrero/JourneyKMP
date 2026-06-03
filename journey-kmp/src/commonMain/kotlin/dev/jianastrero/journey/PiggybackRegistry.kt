@@ -18,7 +18,12 @@ class PiggybackRegistry {
     }
 
     suspend fun fire(id: String, stepId: String = "", journeyId: String = "") {
-        handlers[id]?.fire(stepId, journeyId)
+        val handler = handlers[id]
+        if (handler == null) {
+            println("JourneyKMP Warning: no handler registered for piggyback id='$id' (step='$stepId', journey='$journeyId'). Call register(\"$id\") { … } before this step is entered.")
+            return
+        }
+        handler.fire(stepId, journeyId)
     }
 }
 

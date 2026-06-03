@@ -155,8 +155,11 @@ internal class HostGenerator(
         val cb = CodeBlock.builder()
         cb.beginControlFlow("when (step)")
         steps.forEach { step ->
-            val params = if (step.isDataObject) emptyList()
-            else step.classDecl.primaryConstructor?.parameters.orEmpty()
+            val params = if (step.isDataObject) {
+                emptyList()
+            } else {
+                step.classDecl.primaryConstructor?.parameters.orEmpty()
+            }
             val encodeExpr = if (params.isEmpty()) {
                 "\"${step.simpleName}\""
             } else {
@@ -174,8 +177,11 @@ internal class HostGenerator(
         val cb = CodeBlock.builder()
         cb.beginControlFlow("when (parts.getOrNull(0))")
         steps.forEach { step ->
-            val params = if (step.isDataObject) emptyList()
-            else step.classDecl.primaryConstructor?.parameters.orEmpty()
+            val params = if (step.isDataObject) {
+                emptyList()
+            } else {
+                step.classDecl.primaryConstructor?.parameters.orEmpty()
+            }
             if (params.isEmpty()) {
                 cb.addStatement("%S -> %T.%L", step.simpleName, journeyClass, step.simpleName)
             } else {
